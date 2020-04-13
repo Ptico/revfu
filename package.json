@@ -1,0 +1,32 @@
+{
+  "name": "revfu",
+  "version": "0.1.0",
+  "description": "Assets revision builder",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ptico/revfu.git"
+  },
+  "keywords": [
+    "assets",
+    "bundler"
+  ],
+  "author": "Andrii Savchenko",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Ptico/revfu/issues"
+  },
+  "homepage": "https://github.com/Ptico/revfu#readme",
+  "dependencies": {
+    "isbinaryfile": "^4.0.5",
+    "minimatch": "^3.0.4",
+    "vinyl": "^2.2.0"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^7.1.1"
+  }
+}
