@@ -1,10 +1,14 @@
+const minimatch = require('minimatch');
+
 /**
  * Find references to other files and order them topologically
 
  */
 class Sorter {
-  constructor(files) {
+  constructor(files, options={}) {
     this.files = files;
+
+    this.dontRewrite = options.dontRewrite || [];
 
     this.visited = {};
     this.sorted = [];
@@ -57,8 +61,9 @@ class Sorter {
     this.sorted.push(file); // Add exact file
   }
 
-  searchable(f) {
-    return !f.isBinary; // TODO: options.dontSearch
+  searchable(file) {
+    if (this.dontRewrite.some(pattern => minimatch(file.relative, pattern))) return false;
+    return !file.isBinary;
   }
 }
 

@@ -23,7 +23,8 @@
   "dependencies": {
     "isbinaryfile": "^4.0.5",
     "minimatch": "^3.0.4",
-    "vinyl": "^2.2.0"
+    "vinyl": "^2.2.0",
+    "vinyl-fs": "^3.0.3"
   },
   "devDependencies": {
     "chai": "^4.2.0",
