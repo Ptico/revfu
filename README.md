@@ -2,7 +2,7 @@
 
 `npm install revfu`
 
-To use outside Gulp (see (Usage with Gulp)[#usage-with-gulp]) you may also need a [Vinyl](https://github.com/gulpjs/vinyl) adapter, most likely ([but not limited to](#upload-to-CDN)):
+To use outside Gulp (see [Usage with Gulp](#usage-with-gulp) ) you may also need a [Vinyl](https://github.com/gulpjs/vinyl) adapter, most likely ([but not limited to](#upload-to-CDN)):
 
 `npm install vinyl-fs`
 
