@@ -15,30 +15,21 @@ const DEFAULTS = Object.freeze({
   format: '{name}-{hash}.{ext}',
   hashType: 'sha256',
   hashLength: 8,
-  dontRename: [],
-  dontRewrite: [],
-  customRules: {}
+  customRules: {},
+  manifest: {}
 });
 
 class Revisioner {
-  constructor(files, options, manifestOptions) {
+  constructor(files, options) {
     options = { ...DEFAULTS, ...options };
-    manifestOptions = manifestOptions || {};
 
     this.files = files;
     this.stream = new ReadableStream({ objectMode: true});
 
-    this.manifest = new Manifest(manifestOptions);
-    this.skipManifest = manifestOptions.dontStream;
+    this.manifest = new Manifest(options.manifest);
+    this.skipManifest = options.manifest.dontStream;
 
-    this.dontRename = options.dontRename;
-    this.dontRewrite = options.dontRewrite;
     this.customRules = options.customRules;
-    this.options = {
-      format: options.format,
-      hashType: options.hashType,
-      hashLength: options.hashLength
-    };
   }
 
   run() {
@@ -60,7 +51,7 @@ class Revisioner {
         });
       }
 
-      if (!file.isBinary) file.contents = Buffer.from(file.textContent);
+      if (file.textContent) file.contents = Buffer.from(file.textContent);
 
       this.updatePaths(file);
 
@@ -71,7 +62,7 @@ class Revisioner {
 
   // Rewrite references inside the file contents
   rewriteReferences(file, dep) {
-    if (this.dontRewrite.some(pattern => minimatch(file.relative, pattern))) return;
+    if (file.revOptions.dontRewrite) return;
 
     // Find and replace references with extensions
     file.textContent = file.textContent.replace(dep.replaceRegExpMain, (match, pre, slash) => {
@@ -83,25 +74,19 @@ class Revisioner {
     });
 
     // Find and replace references without extensions
-    // For now, it doesn't apply path transformations like prefix, baseUrl or transformPath
     if (dep.isExtensionless) {
       file.textContent = file.textContent.replace(dep.replaceRegExpBound, (match, b1, slash, waste, b2) => {
         if (!slash) slash = '';
-        return `${b1}${slash}${dep.relative.slice(0, -(dep.extname.length))}${b2}`;
+        return `${b1}${slash}${dep.url.slice(0, -(dep.extname.length))}${b2}`;
       });
     }
   }
 
   // Calculate hash, rename file and apply path transformations
   updatePaths(file) {
-    if (this.dontRename.some(pattern => minimatch(file.relative, pattern))) return;
+    let options = file.revOptions;
 
-    // Detect custom options for this file
-    let options = Object.assign({}, this.options);
-
-    Object.keys(this.customRules).forEach(pattern => {
-      if (minimatch(file, pattern)) options = Object.assign(options, this.customRules[pattern]);
-    });
+    if (options.dontRename) return;
 
     // Create hash anyway, so it can be available in manifest
     let hash = crypto.createHash(options.hashType);
@@ -122,10 +107,9 @@ class Revisioner {
     file.basename = filename;
 
     // Apply path transformations
-    let newPath = file.relative;
+    let newPath = file.urlPath;
 
     if (typeof(options.transformPath) === 'function') newPath = options.transformPath(file, options); // TODO: Decide if we should apply prefix when transform given
-    if (options.prefix) newPath = path.join(options.prefix, newPath);
     if (options.baseUrl) {
       let url = new URL(options.baseUrl);
       url.pathname = newPath;

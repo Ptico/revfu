@@ -9,12 +9,22 @@ const fs = require('fs'),
  */
 const DEFAULTS = Object.freeze({
   dot: false,
-  excludes: [],
+  exclude: [],
   binaryExt: ['.png', '.jpg'],
   extensionless: { // TODO: allow adding extension with default boundaries
     '.js': [['"', "'"], ['"', "'"]]
-  }
+  },
+  dontRename: [],
+  dontRewrite: [],
+  revision: {},
+  overrides: {}
 });
+
+const REVISION_DEFAULTS = {
+  format: '{name}-{hash}.{ext}',
+  hashType: 'sha256',
+  hashLength: 8,
+};
 
 /**
  * Walk through working directory, get list of files
@@ -23,13 +33,30 @@ const DEFAULTS = Object.freeze({
  */
 class Walker {
   constructor(cwd, options={}) {
-    options = Object.assign({}, DEFAULTS, options);
+    options = { ...DEFAULTS, ...options };
 
+    // Search options
     this.cwd = cwd;
-    this.excludes = options.excludes;
+    this.exclude = options.exclude;
     this.dot = options.dot;
+
+    // File options
     this.binaryExt = options.binaryExt;
     this.extensionless = options.extensionless;
+
+    // Revision options
+    this.revOptions = { ...REVISION_DEFAULTS, ...options.revision };
+    this.overrides = options.overrides;
+
+    options.dontRewrite.forEach(pattern => {
+      if (!this.overrides[pattern]) this.overrides[pattern] = {};
+      this.overrides[pattern].dontRewrite = true;
+    });
+
+    options.dontRename.forEach(pattern => {
+      if (!this.overrides[pattern]) this.overrides[pattern] = {};
+      this.overrides[pattern].dontRename = true;
+    });
 
     this.files = [];
   }
@@ -54,6 +81,8 @@ class Walker {
             path: f,
             stat: stat,
             contents: fs.readFileSync(f),
+            revOptions: this.revOptions,
+            overrides: this.overrides,
             extOptions: this.extensionless
           });
 
@@ -71,7 +100,7 @@ class Walker {
 
     let relative = path.relative(this.cwd, file);
 
-    return this.excludes.some(pattern => {
+    return this.exclude.some(pattern => {
       return minimatch(relative, pattern);
     });
   }

@@ -5,10 +5,8 @@ const minimatch = require('minimatch');
 
  */
 class Sorter {
-  constructor(files, options={}) {
+  constructor(files) {
     this.files = files;
-
-    this.dontRewrite = options.dontRewrite || [];
 
     this.visited = {};
     this.sorted = [];
@@ -62,8 +60,7 @@ class Sorter {
   }
 
   searchable(file) {
-    if (this.dontRewrite.some(pattern => minimatch(file.relative, pattern))) return false;
-    return !file.isBinary;
+    return !file.isBinary && !file.dontRewrite;
   }
 }
 

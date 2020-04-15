@@ -12,6 +12,11 @@ function createFile(name, content, isBinary=false) {
     path: path.join(cwd, name),
     contents: Buffer.from(content),
     isBinary: isBinary,
+    revOptions: {
+      format: '{name}-{hash}.{ext}',
+      hashType: 'sha256',
+      hashLength: 8,
+    },
     extOptions: {
       '.js': [['"', "'"], ['"', "'"]]
     }

@@ -24,22 +24,20 @@ Example with [options](#options):
 
 ```js
 revfu(workingDir, {
-  src: {
-    excludes: ['uploads/**', 'robots.txt']
-  },
+  exclude: ['uploads/**', 'robots.txt'],
+  dontRename: ['bootstrap-4.4.1.{js,css}'],
+  dontRewrite: ['bootstrap-4.4.1.js'],
   revision: {
     format: '{hash}-{name}.{ext}',
     hashType: 'sha384',
     hashLength: 10,
     prefix: '/assets',
-    baseUrl: 'https://cdn.com/',
-    dontRename: ['bootstrap-4.4.1.{js,css}'],
-    dontRewrite: ['bootstrap-4.4.1.js'],
-    customRules: {
-      '**/*.json': {
-        prefix: '/data',
-        hashType: 'sha1'
-      }
+    baseUrl: 'https://cdn.com/'
+  },
+  overrides: {
+    '**/*.json': {
+      prefix: '/data',
+      hashType: 'sha1'
     }
   },
   manifest: {
@@ -63,9 +61,7 @@ exports.rev = rev;
 
 ## Options
 
-## `src`
-
-#### `src.excludes`
+### `exclude`
 
 Type: `Array`
 
@@ -75,7 +71,7 @@ Example: `['uploads/**', 'robots.txt']`
 
 Exclude files from search and processing. Takes an array of glob patterns accepted by [minimatch](https://github.com/isaacs/minimatch)
 
-#### `src.dot`
+### `dot`
 
 Type: `Boolean`
 
@@ -83,7 +79,7 @@ Default: `false`
 
 By default, we exclude any file and directory starting with dot (`.git` for example). Turning this on may cause some unexpected results, so use with caution
 
-#### `src.binaryExt`
+### `binaryExt`
 
 Type: `Array`
 
@@ -91,7 +87,7 @@ Default: `['.png', '.jpg']`
 
 List of file extensions which automatically marks as binary. This allows us to avoid false negative binary detection, so we will not search and replace inside binary files
 
-#### `src.extensionless`
+### `extensionless`
 
 Type: `Map`
 
@@ -100,6 +96,22 @@ Default: `'.js': [['"', "'"], ['"', "'"]]`
 Example: `'.css: [['css!.'], ['"', '"']]` - will match and replace `css!.styles/app.css"`
 
 Some file types may be referenced without extension, for example js files might be required by some nodejs shim `require "application"`. To avoid false positive search, we only replace strings surrounded by boundaries
+
+### `dontRename`
+
+Type: `Array`
+
+Default: `[]`
+
+Array of glob patterns which should not be renamed
+
+### `dontRewrite`
+
+Type: `Array`
+
+Default: `[]`
+
+Array of glob patterns. Files matched with this patterns will be kept untouched (references to other files will not be rewritten)
 
 ### `revision`
 
@@ -127,22 +139,6 @@ Default: `8`
 
 The number of first `n` symbols of hash hex representation applied to filename
 
-#### `revision.dontRename`
-
-Type: `Array`
-
-Default: `[]`
-
-Array of glob patterns which should not be renamed
-
-#### `revision.dontRewrite`
-
-Type: `Array`
-
-Default: `[]`
-
-Array of glob patterns. Files matched with this patterns will be kept untouched (references to other files will not be rewritten)
-
 #### `revision.transformPath`
 
 Type: `Function`
@@ -157,7 +153,7 @@ Type: `String`
 
 Default: `undefined`
 
-Path prefix. Useful for cases, when web server is configured to serve static files under different paths
+Path prefix. Useful for cases, when working dir is a subdir inside one, configured to serve static files. For example, if static files serves from `public/` dir, but working dir is `public/assets`, this option set to `/assets` adds an ability to find and replace `/assets/**` references
 
 #### `revision.baseUrl`
 
@@ -165,15 +161,15 @@ Type: `URL|String`
 
 Default: `undefined`
 
-Convert references to URLs. Useful with CDN (See [Upload to CDN](#upload-to-CDN))
+Convert references to URLs. Useful with CDN (See [Upload to CDN](#upload-to-CDN)).
 
-#### `revision.customRules`
+### `overrides`
 
 Type: `Map`
 
 Default: `{}`
 
-Example: `'js/**/*': { prefix: '/javascripts' }`
+Example: `'**/*.js': { prefix: '/javascripts' }`
 
 Override `revision.*` options for particular glob pattern
 
@@ -181,7 +177,7 @@ Override `revision.*` options for particular glob pattern
 
 #### `manifest.path`
 
-Type: `string`
+Type: `String`
 
 Default: `assets.json`
 

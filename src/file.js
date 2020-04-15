@@ -1,4 +1,6 @@
-const Vinyl = require('vinyl');
+const path = require('path'),
+      minimatch = require('minimatch'),
+      Vinyl = require('vinyl');
 
 const reRegExpChar = /[\\^$.*+?()[\]{}|]/g; // Taken from lodash. (c) lodash team and contributors, MIT license
 function escapeRegExp(string) {
@@ -9,6 +11,8 @@ const PATH_PRE = ['"', "'", '^', ',', '=', '\\(', '\\s'];
 
 const PROPS = {
   extOptions: true,
+  revOptions: true,
+  overrides: true,
   isExtensionless: true,
   deps: true,
   searchRegExp: true,
@@ -24,7 +28,35 @@ class File extends Vinyl {
     this.deps = [];
     this.isExtensionless = Array.isArray(boundaries);
 
+    let revOptions = { ...options.revOptions };
+
+   /**
+    * Build per-file options
+    * Available options:
+    * - prefix
+    * - baseUrl
+    * - transformPath
+    * - dontRename
+    * - dontRewrite,
+    * - format
+    * - hashType
+    * - hashLength
+    */
+    Object.keys(options.overrides || {}).forEach(pattern => {
+      if (minimatch(this.relative, pattern)) options = Object.assign(revOptions, options.overrides[pattern]);
+    });
+
+    this.revOptions = revOptions;
+
     this.buildRegexps(boundaries);
+  }
+
+  get urlPath() {
+    if (this.revOptions.prefix) {
+      return path.join(this.revOptions.prefix, this.relative);
+    } else {
+      return this.relative;
+    }
   }
 
   addDep(depPath) {
@@ -32,13 +64,16 @@ class File extends Vinyl {
   }
 
   buildRegexps(boundaries) {
-    this.searchRegExpMain = new RegExp(`[${PATH_PRE.join('')}]\/?${escapeRegExp(this.relative)}`);
-    this.replaceRegExpMain = new RegExp(`(${PATH_PRE.join('|')})(\/)?(${escapeRegExp(this.relative)})`, 'g');
+    let searchPath = this.urlPath;
+
+    this.searchRegExpMain = new RegExp(`[${PATH_PRE.join('')}]\/?${escapeRegExp(searchPath)}`);
+    this.replaceRegExpMain = new RegExp(`(${PATH_PRE.join('|')})(\/)?(${escapeRegExp(searchPath)})`, 'g');
 
     if (this.isExtensionless) {
       let boundsLeft  = boundaries[0].map(s => escapeRegExp(s)),
-          boundsRight = boundaries[1].map(s => escapeRegExp(s)),
-          searchPath  = escapeRegExp(this.relative.slice(0, -(this.extname.length)));
+          boundsRight = boundaries[1].map(s => escapeRegExp(s));
+
+      searchPath = escapeRegExp(searchPath.slice(0, -(this.extname.length)));
 
       this.searchRegExpBound  = new RegExp(`[${boundsLeft.join('')}]\/?${searchPath}[${boundsRight.join('')}]`);
       this.replaceRegExpBound = new RegExp(`(${boundsLeft.join('|')})(\/)?(${searchPath})(${boundsRight.join('|')})`, 'g');

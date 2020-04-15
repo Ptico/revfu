@@ -38,8 +38,8 @@ describe('Walker', function() {
     });
   });
 
-  describe('options.excludes', function() {
-    let files = new Walker(basePath, { excludes: ['css', 'index.js'] }).run().map(f => f.relative);
+  describe('options.exclude', function() {
+    let files = new Walker(basePath, { exclude: ['css', 'index.js'] }).run().map(f => f.relative);
 
     it('should skip given files and dirs', function() {
       expect(files).to.not.include.members(['css/main.css', 'css/secondary.css', 'index.js']);
