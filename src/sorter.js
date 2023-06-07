@@ -1,5 +1,3 @@
-const minimatch = require('minimatch');
-
 /**
  * Find references to other files and order them topologically
 

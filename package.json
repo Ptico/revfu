@@ -1,10 +1,10 @@
 {
   "name": "revfu",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Assets revision builder",
   "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha test/unit"
   },
   "repository": {
     "type": "git",
@@ -21,13 +21,13 @@
   },
   "homepage": "https://github.com/Ptico/revfu#readme",
   "dependencies": {
-    "isbinaryfile": "^4.0.5",
-    "minimatch": "^3.0.4",
-    "vinyl": "^2.2.0",
+    "isbinaryfile": "^5.0.0",
+    "micromatch": "^4.0.5",
+    "vinyl": "^3.0.0",
     "vinyl-fs": "^3.0.3"
   },
   "devDependencies": {
-    "chai": "^4.2.0",
-    "mocha": "^7.1.1"
+    "chai": "^4.3.7",
+    "mocha": "^10.2.0"
   }
 }

@@ -1,7 +1,6 @@
 const path = require('path'),
       ReadableStream = require('stream').Readable,
       crypto = require('crypto'),
-      minimatch = require('minimatch'),
       Manifest = require('./manifest');
 
 const nameReg = /(\{name\})/g,

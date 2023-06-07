@@ -1,7 +1,7 @@
 const fs = require('fs'),
       path = require('path'),
       File = require('./file'),
-      minimatch = require('minimatch'),
+      micromatch = require('micromatch'),
       isBinaryFileSync = require('isbinaryfile').isBinaryFileSync;
 
 /**
@@ -101,7 +101,7 @@ class Walker {
     let relative = path.relative(this.cwd, file);
 
     return this.exclude.some(pattern => {
-      return minimatch(relative, pattern);
+      return micromatch.isMatch(relative, pattern);
     });
   }
 

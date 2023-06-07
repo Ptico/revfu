@@ -1,5 +1,5 @@
 const path = require('path'),
-      minimatch = require('minimatch'),
+      micromatch = require('micromatch'),
       Vinyl = require('vinyl');
 
 const reRegExpChar = /[\\^$.*+?()[\]{}|]/g; // Taken from lodash. (c) lodash team and contributors, MIT license
@@ -43,7 +43,7 @@ class File extends Vinyl {
     * - hashLength
     */
     Object.keys(options.overrides || {}).forEach(pattern => {
-      if (minimatch(this.relative, pattern)) options = Object.assign(revOptions, options.overrides[pattern]);
+      if (micromatch.isMatch(this.relative, pattern)) options = Object.assign(revOptions, options.overrides[pattern]);
     });
 
     this.revOptions = revOptions;
