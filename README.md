@@ -69,7 +69,7 @@ Default: `[]`
 
 Example: `['uploads/**', 'robots.txt']`
 
-Exclude files from search and processing. Takes an array of glob patterns accepted by [minimatch](https://github.com/isaacs/minimatch)
+Exclude files from search and processing. Takes an array of glob patterns accepted by [micromatch](https://github.com/micromatch/micromatch)
 
 ### `dot`
 
