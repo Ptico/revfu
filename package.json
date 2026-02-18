@@ -1,10 +1,18 @@
 {
   "name": "revfu",
-  "version": "0.3.0",
-  "description": "Assets revision builder",
+  "version": "1.0.0-alpha.1",
+  "description": "Assets revision builder with dependency-aware cascading hashes",
   "main": "src/index.js",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./src/index.js"
+    }
+  },
   "scripts": {
-    "test": "mocha test/unit"
+    "test": "mocha test/unit test/integration",
+    "test:unit": "mocha test/unit",
+    "test:integration": "mocha test/integration"
   },
   "repository": {
     "type": "git",
@@ -12,7 +20,11 @@
   },
   "keywords": [
     "assets",
-    "bundler"
+    "bundler",
+    "revision",
+    "hash",
+    "gulp",
+    "vinyl"
   ],
   "author": "Andrii Savchenko",
   "license": "MIT",
@@ -20,14 +32,18 @@
     "url": "https://github.com/Ptico/revfu/issues"
   },
   "homepage": "https://github.com/Ptico/revfu#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "dependencies": {
-    "isbinaryfile": "^5.0.0",
-    "micromatch": "^4.0.5",
-    "vinyl": "^3.0.0",
-    "vinyl-fs": "^4.0.0"
+    "glob": "^13.0.5",
+    "isbinaryfile": "^6.0.0",
+    "micromatch": "^4.0.8",
+    "vinyl": "^3.0.1"
   },
   "devDependencies": {
-    "chai": "^4.3.7",
-    "mocha": "^10.2.0"
+    "chai": "^6.2.2",
+    "mocha": "12.0.0-beta-9",
+    "vinyl-fs": "^4.0.2"
   }
 }

@@ -1,0 +1,11 @@
+/* Level 1: CSS variables with absolute path */
+:root {
+  --primary-color: #007bff;
+  --secondary-color: #6c757d;
+  --font-family: 'Arial', sans-serif;
+}
+
+.logo {
+  background-image: url(/img/unicorn.png);
+  background-size: contain;
+}

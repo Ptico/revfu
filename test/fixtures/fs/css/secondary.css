@@ -1,0 +1,10 @@
+/* Level 1: Secondary styles with different path style */
+.footer {
+  /* Absolute path with spaces */
+  background: url( /img/like.svg );
+  padding: 20px;
+}
+
+.sidebar {
+  width: 250px;
+}

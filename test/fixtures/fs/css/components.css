@@ -1,0 +1,15 @@
+/* Level 2: Component styles with file-relative paths */
+.icon {
+  background: url(../img/like.svg);
+  width: 24px;
+  height: 24px;
+}
+
+.icon::after {
+  content: url(../img/unicorn.png);
+}
+
+.button {
+  padding: 10px 20px;
+  border-radius: 4px;
+}
