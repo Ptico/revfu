@@ -25,7 +25,7 @@ export class Walker {
    */
   stream() {
     const config = this.config;
-    const patterns = config.getGlobPatterns();
+    const patterns = config.walker.include;
     const globOptions = config.getGlobOptions();
 
     // Create a readable stream in object mode
@@ -107,7 +107,7 @@ export class Walker {
   async _detectBinary(file) {
     // Common binary extensions - skip expensive detection
     const binaryExtensions = [
-      '.png', '.jpg', '.jpeg', '.gif', '.webp', '.bmp', '.ico', '.svg',
+      '.png', '.jpg', '.jpeg', '.gif', '.webp', '.bmp', '.ico',
       '.woff', '.woff2', '.ttf', '.eot', '.otf',
       '.mp3', '.mp4', '.webm', '.ogg', '.wav', '.flac',
       '.zip', '.tar', '.gz', '.7z', '.rar',

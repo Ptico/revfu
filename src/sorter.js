@@ -120,16 +120,11 @@ export class Sorter {
   }
 
   /**
-   * Detect circular dependencies (alternative approach using DFS)
-   * Returns array of files involved in cycles, or empty array if none
-   * @returns {Array<string>}
+   * Build reverse graph (file -> its dependency paths)
+   * @private
+   * @returns {Map<string, string[]>}
    */
-  detectCycles() {
-    const visited = new Set();
-    const recursionStack = new Set();
-    const cycleNodes = new Set();
-
-    // Build reverse graph (deps -> file)
+  _buildReverseGraph() {
     const reverseGraph = new Map();
     for (const file of this.files) {
       if (!reverseGraph.has(file.relative)) {
@@ -142,6 +137,20 @@ export class Sorter {
         reverseGraph.get(file.relative).push(dep.relative);
       }
     }
+    return reverseGraph;
+  }
+
+  /**
+   * Detect circular dependencies (alternative approach using DFS)
+   * Returns array of files involved in cycles, or empty array if none
+   * @returns {Array<string>}
+   */
+  detectCycles() {
+    const visited = new Set();
+    const recursionStack = new Set();
+    const cycleNodes = new Set();
+
+    const reverseGraph = this._buildReverseGraph();
 
     const dfs = (node) => {
       visited.add(node);
@@ -182,20 +191,7 @@ export class Sorter {
    */
   getDepthMap() {
     const depths = new Map();
-
-    // Build reverse graph
-    const reverseGraph = new Map();
-    for (const file of this.files) {
-      if (!reverseGraph.has(file.relative)) {
-        reverseGraph.set(file.relative, []);
-      }
-      for (const dep of file.deps) {
-        if (!reverseGraph.has(dep.relative)) {
-          reverseGraph.set(dep.relative, []);
-        }
-        reverseGraph.get(file.relative).push(dep.relative);
-      }
-    }
+    const reverseGraph = this._buildReverseGraph();
 
     // Calculate depth using DFS
     const calculateDepth = (node, visited = new Set()) => {

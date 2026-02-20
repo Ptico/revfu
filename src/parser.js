@@ -143,32 +143,17 @@ export class Parser extends Transform {
   }
 
   /**
-   * Check if reference is to a local file (not external URL or package)
+   * Check if reference is to a local file (not external URL)
    * @private
    */
   _isLocalReference(refPath) {
-    // Skip URLs
-    if (/^https?:\/\//.test(refPath)) {
+    // Skip URLs and protocol-relative URLs
+    if (/^(https?:)?\/\//.test(refPath)) {
       return false;
     }
 
-    // Skip protocol-relative URLs
-    if (/^\/\//.test(refPath)) {
-      return false;
-    }
-
-    // Skip data URIs
-    if (/^data:/.test(refPath)) {
-      return false;
-    }
-
-    // Skip absolute URLs with other protocols
+    // Skip data URIs and other protocols
     if (/^\w+:/.test(refPath)) {
-      return false;
-    }
-
-    // Skip node_modules packages (not starting with ./ or ../)
-    if (!refPath.startsWith('.') && !refPath.startsWith('/')) {
       return false;
     }
 
@@ -211,28 +196,28 @@ export class Parser extends Transform {
       return this.resolveCache.get(cacheKey);
     }
 
-    // Get the directory of the source file
-    const fromDir = path.dirname(fromFile.relative);
-
-    // Resolve relative to source file
-    let resolved = path.normalize(path.join(fromDir, refPath));
-
     // Handle prefix if configured
+    let refNormalized = refPath;
     const prefix = this.config.url.prefix;
     if (prefix && refPath.startsWith(prefix)) {
-      // Remove prefix to get relative path
-      resolved = refPath.slice(prefix.length);
-      if (resolved.startsWith('/')) {
-        resolved = resolved.slice(1);
+      refNormalized = refPath.slice(prefix.length);
+      if (refNormalized.startsWith('/')) {
+        refNormalized = refNormalized.slice(1);
       }
     }
 
-    // Try to find the file
-    let targetFile = this.filesByPath.get(resolved);
+    // Resolve relative to source file
+    const fromDir = path.dirname(fromFile.relative);
+    const resolved = path.normalize(path.join(fromDir, refNormalized));
 
-    // If not found, try common variations
-    if (!targetFile) {
-      targetFile = this._tryResolveVariations(resolved);
+    // Try to find the file
+    let targetFile = this.filesByPath.get(resolved)
+      || this._tryResolveVariations(resolved);
+
+    // For base-relative paths (e.g. "images/logo.png"), also try as-is
+    if (!targetFile && !refNormalized.startsWith('.')) {
+      targetFile = this.filesByPath.get(refNormalized)
+        || this._tryResolveVariations(refNormalized);
     }
 
     // Cache result (even if null)
@@ -247,7 +232,6 @@ export class Parser extends Transform {
    */
   _tryResolveVariations(refPath) {
     const variations = [
-      refPath,
       refPath + '.js',
       refPath + '.jsx',
       refPath + '.ts',

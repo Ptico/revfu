@@ -5,7 +5,6 @@ import path from 'path';
 const nameReg = /(\{name\})/g;
 const hashReg = /(\{hash\})/g;
 const extReg = /(\{ext\})/g;
-const urlReg = /^https?::/;
 
 /**
  * Escape special regex characters
@@ -134,7 +133,6 @@ export class Revisioner {
       depOrigPath,               // Relative to base: file.js
       './' + depOrigPath,        // With ./: ./file.js
       relativePath,              // Relative to current file: ../dir/file.js
-      './' + relativePath,       // With ./: ./../dir/file.js
     ];
 
     // Build patterns for each variation

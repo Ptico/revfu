@@ -38,25 +38,6 @@ describe('Config', () => {
     });
   });
 
-  describe('getGlobPatterns', () => {
-    it('should return include patterns with negated excludes', () => {
-      const config = new Config('/test/dir', {
-        walker: {
-          include: ['**/*.js', '**/*.css'],
-          exclude: ['node_modules/**', '*.test.js']
-        }
-      });
-
-      const patterns = config.getGlobPatterns();
-      expect(patterns).to.deep.equal([
-        '**/*.js',
-        '**/*.css',
-        '!node_modules/**',
-        '!*.test.js'
-      ]);
-    });
-  });
-
   describe('getGlobOptions', () => {
     it('should return options for glob library', () => {
       const config = new Config('/test/dir', {

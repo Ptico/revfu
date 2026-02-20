@@ -324,23 +324,6 @@ export class Config {
   }
 
   /**
-   * Get glob patterns for file discovery
-   * Combines include patterns with negated exclude patterns
-   *
-   * @returns {string[]} Array of glob patterns
-   */
-  getGlobPatterns() {
-    const patterns = [...this.walker.include];
-
-    // Add negated exclude patterns
-    for (const pattern of this.walker.exclude) {
-      patterns.push(`!${pattern}`);
-    }
-
-    return patterns;
-  }
-
-  /**
    * Get glob options for the walker
    *
    * @returns {Object} Options for glob library
