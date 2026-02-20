@@ -1,0 +1,16 @@
+/* Level 3: Main CSS with imports and base-relative paths */
+@import "./variables.css";
+@import url(components.css);
+
+body {
+  font-family: var(--font-family);
+  margin: 0;
+  padding: 0;
+  /* Base-relative path */
+  background: url("img/unicorn.png#bg");
+}
+
+.header {
+  /* Another base-relative reference */
+  background-image: url(img/like.svg);
+}

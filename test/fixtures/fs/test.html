@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Page</title>
+  <!-- Absolute path -->
+  <link rel="stylesheet" href="/css/main.css">
+  <!-- Base-relative path -->
+  <link rel="icon" href="img/like.svg">
+</head>
+<body>
+  <div class="header">
+    <!-- Relative path -->
+    <img src="./img/unicorn.png" alt="Unicorn">
+  </div>
+  <div class="content">
+    <!-- Base-relative with srcset -->
+    <img src="img/like.svg" srcset="img/like.svg 1x, img/unicorn.png 2x" alt="Like">
+  </div>
+  <!-- Script with absolute path -->
+  <script src="/js/app.js"></script>
+  <!-- Script with base-relative path -->
+  <script src="index.js"></script>
+</body>
+</html>
